@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>ポケギア算</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="初手が良い感じになる確率を割り出す君">
+    <script src="https://cdn.jsdelivr.net/npm/vue" type="text/javascript"></script>
+  </head>
+
+  <body>
+    <div id="app">
+
+      <h1>ポケギア算</h1>
+
+      <p>欲しいカードの枚数や各種サーチの枚数から、初手が良い感じになる確率を割り出します</p>
+      <p>(サーチでサーチをサーチするパターンは考慮しないので、確定サーチも「欲しいカード」の枚数に数えてしまうなど、うまい感じで工夫して使ってください)</p>
+
+      例：
+
+      <select @change="changePreset" v-model="preset">
+        <option value="default">-</option>
+        <option value="exo">初手でエクゾディアが揃っている確率</option>
+        <option value="tane8">種ポケモン８枚でマリガンにならない確率</option>
+        <option value="support8">サポート８枚＋ポケナビ２枚で１枚はサポートに触れる確率</option>
+      </select>
+
+      <h2>基本設定</h2>
+
+      <div>
+        初手：
+        <input type="number" v-model="handNum" /> 枚
+      </div>
+
+      <div>
+        デッキ：
+        <input type="number" v-model="deckNum" /> 枚
+      </div>
+
+      <h2>欲しいカード</h2>
+
+      <ul>
+        <li v-for="(e, ix) in targets">
+          {{ String.fromCharCode(65 + ix) }}
+          x <input type="number" v-model="targets[ix]" /> 枚
+          <button v-if="ix >= 1" @click="delTarget(ix)">x</button>
+        </li>
+      </ul>
+
+      <button @click="addTarget()">＋</button>
+
+      <h2>サーチカード</h2>
+
+      <ul>
+        <li v-for="(e, ix) in searches">
+          <span v-if="e.type == 'prob' && e.prob == 100">
+            確定サーチ
+          </span>
+          <span v-if="e.type == 'prob' && e.prob != 100">
+            ランダムサーチ
+            (<input type="number" v-model="searches[ix].prob" /> ％成功)
+          </span>
+          <span v-if="e.type == 'count'">
+            ランダムサーチ
+            (<input type="number" v-model="searches[ix].count" /> 枚めくる)
+          </span>
+          対象
+          <select v-model="searches[ix].target">
+            <option v-for="(e, ix) in targets" :value="ix">
+              {{ String.fromCharCode(65 + ix) }}
+            </option>
+          </select>
+          x <input type="number" v-model="searches[ix].num" /> 枚
+          <button @click="delSearch(ix)">x</button>
+        </li>
+      </ul>
+
+      <button @click="add100Search()">＋確定サーチ</button>
+      <button @click="addProbSearch()">＋ランダムサーチ (確率固定)</button>
+      <button @click="addCountSearch()">＋ランダムサーチ (枚数固定)</button>
+
+      <h2>結果</h2>
+
+      <button @click="compute()">計算</button>
+
+      <p>欲しいカードが各１枚以上揃う確率：{{ result }} %</p>
+
+    </div>
+    <script src="main.js"></script>
+  </body>
+
+</html>
