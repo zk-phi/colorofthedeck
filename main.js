@@ -145,6 +145,12 @@ const vm = new Vue({
                 vm.targets = [1, 1, 1, 1, 1];
                 vm.searches = [];
                 vm.compute();
+            } else if (vm.preset == 'land') {
+                vm.deckNum = 60;
+                vm.handNum = 7;
+                vm.targets = [20];
+                vm.searches = [];
+                vm.compute();
             }
         }
     }
