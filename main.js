@@ -35,7 +35,7 @@ function solve () {
         negProb: vm.targets.map(function () { return 1.0 }),
         /* これから引くハンド枚数 */
         handNum: vm.handNum,
-        /* ここまでのデッキ枚数 */
+        /* 残りのデッキ枚数 (引かないと決めたカードを除く) */
         deckNum: vm.deckNum,
         /* どこまで見たか */
         targetsIx: 0,
