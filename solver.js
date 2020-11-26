@@ -10,9 +10,22 @@ var searches;
  * handNum  ... Int      ハンド枚数
  * targets  ... Int[]    欲しいカードの枚数の配列
  * searches ... Search[] サーチカードの配列、それぞれの要素は以下のどちらか：
- * - 確率固定サーチ { type: 'prob', successRate: 成功率, num: 枚数, target: サーチ対象 }
+ * - 確率固定サーチ { type: 'prob', successRate: 成功率%, num: 枚数, target: サーチ対象 }
  * - 枚数固定サーチ { type: 'count', count: 見れる枚数, num: 枚数, target: サーチ対象 }
  * - (確定サーチは確率 1.0 の確率固定サーチ)
+ *
+ * [例]
+ * // デッキ枚数６０枚から８枚を引いて、各４枚投入された欲しいカード A, B を揃えたい
+ * // 50% の確率で成功する A のサーチと、 25% の B のサーチが各４枚入っている
+ * solve({
+ *   deckNum: 60,
+ *   handNum: 8,
+ *   targets: [4, 4],
+ *   searches: [
+ *     { type: 'prob', successRate: 50, num: 4, target: 0 },
+ *     { type: 'prob', successRate: 25, num: 4, target: 1 }
+ *   ]
+ * })
  *
  * [戻り値]
  * - すべての欲しいカードに最低１枚は触れる確率
