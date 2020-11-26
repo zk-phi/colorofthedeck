@@ -10,89 +10,6 @@ function ncr (n, r) {
     return fact(n) / fact(n - r) / fact(r);
 }
 
-var deckNum;
-var handNum;
-var targets;
-var searches;
-
-function solve () {
-    deckNum = vm.deckNum;
-    handNum = vm.handNum;
-    targets = vm.targets;
-    searches = vm.searches.map(function (s) {
-        if (s.type == 'prob') {
-            return { negProb: 1.0 - (s.prob / 100.0), num: s.num, target: s.target };
-        } else {
-            var a = ncr(vm.deckNum - vm.handNum - vm.targets[s.target], s.count);
-            var b = ncr(vm.deckNum - vm.handNum, s.count);
-            return { negProb: a / b, num: s.num, target: s.target };
-        }
-    });
-    return solveR({
-        /* ここまでの場合の数 */
-        cases: 1,
-        /* 各 target に「触れない」確率 */
-        negProb: vm.targets.map(function () { return 1.0 }),
-        /* これから引くハンド枚数 */
-        handNum: vm.handNum,
-        /* 残りのデッキ枚数 (引かないと決めたカードを除く) */
-        deckNum: vm.deckNum,
-        /* どこまで見たか */
-        targetsIx: 0,
-        searchesIx: 0
-    });
-}
-
-function solveR (state) {
-    if (state.handNum == 0) {
-        var caseProb = state.cases / ncr(deckNum, handNum);
-        return caseProb * state.negProb.reduce(function (l, r) { return l * (1.0 - r); }, 1);
-    } else if (state.targetsIx < targets.length) {
-        var prob = 0;
-        var targetNum = targets[state.targetsIx];
-        for (var i = 0; i <= Math.min(targetNum, state.handNum); i++) {
-            /* targetsIx 番目の「欲しいカード」を i 枚素引きする場合 */
-            prob += solveR({
-                cases: state.cases * ncr(targetNum, i),
-                negProb: state.negProb.map(function (v, ix) {
-                    return v * (ix == state.targetsIx ? Math.pow(0, i) : 1)
-                }),
-                handNum: state.handNum - i,
-                deckNum: state.deckNum - targetNum,
-                targetsIx: state.targetsIx + 1,
-                searchesIx: state.searchesIx
-            });
-        }
-        return prob;
-    } else if (state.searchesIx < searches.length) {
-        var prob = 0;
-        var search = searches[state.searchesIx];
-        for (var i = 0; i <= Math.min(search.num, state.handNum); i++) {
-            /* searchesIx 番目のサーチを i 枚素引きする場合 */
-            prob += solveR({
-                cases: state.cases * ncr(search.num, i),
-                negProb: state.negProb.map(function (v, ix) {
-                    return v * (ix == search.target ? Math.pow(search.negProb, i) : 1)
-                }),
-                handNum: state.handNum - i,
-                deckNum: state.deckNum - search.num,
-                targetsIx: state.targetsIx,
-                searchesIx: state.searchesIx + 1
-            });
-        }
-        return prob;
-    } else {
-        return solveR({
-            cases: state.cases * ncr(state.deckNum, state.handNum),
-            negProb: state.negProb,
-            handNum: 0,
-            deckNum: state.deckNum - state.handNum,
-            targetsIx: state.targetsIx,
-            searchesIx: state.searchesIx
-        });
-    }
-}
-
 const vm = new Vue({
     el: "#app",
     data: {
@@ -123,8 +40,17 @@ const vm = new Vue({
             vm.searches.push({ type: 'count', count: 7, target: 0, num: 4 });
         },
         compute: function () {
-            vm.result = "(計算中)";
-            vm.result = solve() * 100;
+            try {
+                var successRate = solve({
+                    deckNum: vm.deckNum,
+                    handNum: vm.handNum,
+                    targets: vm.targets,
+                    searches: vm.searches,
+                });
+                vm.result = successRate * 100;
+            } catch {
+                vm.result = "N/A";
+            }
         },
         changePreset: function () {
             if (vm.preset == 'tane8') {

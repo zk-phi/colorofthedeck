@@ -1,0 +1,104 @@
+
+var deckNum;
+var handNum;
+var targets;
+var searches;
+
+/*
+ * [引数]
+ * deckNum  ... Int      デッキ枚数
+ * handNum  ... Int      ハンド枚数
+ * targets  ... Int[]    欲しいカードの枚数の配列
+ * searches ... Search[] サーチカードの配列、それぞれの要素は以下のどちらか：
+ * - 確率固定サーチ { type: 'prob', successRate: 成功率, num: 枚数, target: サーチ対象 }
+ * - 枚数固定サーチ { type: 'count', count: 見れる枚数, num: 枚数, target: サーチ対象 }
+ * - (確定サーチは確率 1.0 の確率固定サーチ)
+ *
+ * [戻り値]
+ * - すべての欲しいカードに最低１枚は触れる確率
+ */
+
+function solve (params) {
+    deckNum = params.deckNum;
+    handNum = params.handNum;
+    targets = params.targets;
+    /* 失敗率に変換しておく */
+    searches = params.searches.map(function (s) {
+        if (s.type == 'prob') {
+            return { failRate: 1.0 - (s.successRate / 100.0), num: s.num, target: s.target };
+        } else {
+            /* 枚数固定サーチの失敗率も計算しておく */
+            var a = ncr(params.deckNum - params.handNum - params.targets[s.target], s.count);
+            var b = ncr(params.deckNum - params.handNum, s.count);
+            return { failRate: a / b, num: s.num, target: s.target };
+        }
+    });
+    return solveR({
+        /* ここまでの場合の数 */
+        cases: 1,
+        /* 現時点の手札で各 target に「触れない」確率 */
+        failRate: params.targets.map(function () { return 1.0 }),
+        /* 今後引けるハンド枚数 */
+        handNum: params.handNum,
+        /* 今後引けるデッキ枚数 (引かないと決めたカードは除く) */
+        deckNum: params.deckNum,
+        /* どこまで見たか */
+        targetsIx: 0,
+        searchesIx: 0
+    });
+}
+
+function solveR (state) {
+    if (state.handNum == 0) {
+        /* 手札を引き終わった → 確率計算して返す */
+        var caseProb = state.cases / ncr(deckNum, handNum);
+        var successRate = state.failRate.reduce(function (l, r) { return l * (1.0 - r); }, 1);
+        return caseProb * successRate; /* この手札になる確率 x サーチの成功率 */
+    } else if (state.targetsIx < targets.length) {
+        /* 「欲しいカード」を各何枚素引きするかの場合分け */
+        var successRate = 0;
+        var targetNum = targets[state.targetsIx];
+        for (var i = 0; i <= Math.min(targetNum, state.handNum); i++) {
+            /* targetsIx 番目の「欲しいカード」を i 枚素引きする場合 */
+            successRate += solveR({
+                cases: state.cases * ncr(targetNum, i),
+                failRate: state.failRate.map(function (v, ix) {
+                    return v * (ix == state.targetsIx ? Math.pow(0, i) : 1)
+                }),
+                handNum: state.handNum - i,
+                deckNum: state.deckNum - targetNum,
+                targetsIx: state.targetsIx + 1,
+                searchesIx: state.searchesIx
+            });
+        }
+        return successRate;
+    } else if (state.searchesIx < searches.length) {
+        /* サーチを各何枚引くかの場合分け */
+        var successRate = 0;
+        var search = searches[state.searchesIx];
+        for (var i = 0; i <= Math.min(search.num, state.handNum); i++) {
+            /* searchesIx 番目のサーチを i 枚素引きする場合 */
+            successRate += solveR({
+                cases: state.cases * ncr(search.num, i),
+                failRate: state.failRate.map(function (v, ix) {
+                    return v * (ix == search.target ? Math.pow(search.failRate, i) : 1)
+                }),
+                handNum: state.handNum - i,
+                deckNum: state.deckNum - search.num,
+                targetsIx: state.targetsIx,
+                searchesIx: state.searchesIx + 1
+            });
+        }
+        return successRate;
+    } else {
+        /* 「欲しいカード」とサーチを引く枚数が確定 → 残りは適当なカード */
+        return solveR({
+            cases: state.cases * ncr(state.deckNum, state.handNum),
+            failRate: state.failRate,
+            handNum: 0,
+            deckNum: state.deckNum - state.handNum,
+            targetsIx: state.targetsIx,
+            searchesIx: state.searchesIx
+        });
+    }
+}
