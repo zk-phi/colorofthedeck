@@ -1,4 +1,3 @@
-
 var deckNum;
 var handNum;
 var targets;
@@ -114,4 +113,18 @@ function solveR (state) {
             searchesIx: state.searchesIx
         });
     }
+}
+
+/* 階乗 */
+var facts = [1];
+function fact (n) {
+    if (!facts[n]) {
+        facts[n] = fact(n - 1) * n;
+    }
+    return facts[n];
+}
+
+/* n 個から r 個選ぶ組み合わせ */
+function ncr (n, r) {
+    return fact(n) / fact(n - r) / fact(r);
 }

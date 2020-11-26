@@ -1,15 +1,3 @@
-var facts = [1];
-function fact (n) {
-    if (!facts[n]) {
-        facts[n] = fact(n - 1) * n;
-    }
-    return facts[n];
-}
-
-function ncr (n, r) {
-    return fact(n) / fact(n - r) / fact(r);
-}
-
 const vm = new Vue({
     el: "#app",
     data: {
