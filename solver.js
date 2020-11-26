@@ -37,7 +37,7 @@ function solve (params) {
     /* 失敗率に変換しておく */
     searches = params.searches.map(function (s) {
         if (s.type == 'prob') {
-            return { failRate: 1.0 - (s.successRate / 100.0), num: s.num, target: s.target };
+            return { failRate: 1.0 - (s.prob / 100.0), num: s.num, target: s.target };
         } else {
             /* 枚数固定サーチの失敗率も計算しておく */
             var a = ncr(params.deckNum - params.handNum - params.targets[s.target], s.count);
