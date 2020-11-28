@@ -6,7 +6,11 @@ const vm = new Vue({
         deckNum: 60,
         targets: [4],
         searches: [],
-        result: "-"
+        showDetails: false,
+        result: {
+            hands: [],
+            successRate: "-"
+        }
     },
     methods: {
         delTarget: function (ix) {
@@ -27,17 +31,19 @@ const vm = new Vue({
         addCountSearch: function () {
             vm.searches.push({ type: 'count', count: 7, target: 0, num: 4 });
         },
+        toggleShowDetails: function () {
+            vm.showDetails = !vm.showDetails;
+        },
         compute: function () {
             try {
-                var successRate = solve({
+                vm.result = solve({
                     deckNum: vm.deckNum,
                     handNum: vm.handNum,
                     targets: vm.targets,
                     searches: vm.searches,
                 });
-                vm.result = successRate * 100;
             } catch {
-                vm.result = "N/A";
+                vm.result = { hands: [], successRate: "N/A" };
             }
         },
         changePreset: function () {

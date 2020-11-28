@@ -94,7 +94,30 @@
 
       <button @click="compute()">計算</button>
 
-      <p>欲しいカードが各１枚以上揃う確率：{{ result }} %</p>
+      <p>欲しいカードが各１枚以上揃う確率：{{ result.successRate * 100 }} %</p>
+
+      <h2>詳細</h2>
+
+      <button @click="toggleShowDetails()">
+        {{ showDetails ? "詳細を閉じる" : "ハンドごとの確率を表示" }}
+      </button>
+
+      <ul v-if="showDetails">
+        <li v-for="hand in result.hands">
+          <span v-for="(t, ix) in hand.targets">
+            <span v-if="t">
+              欲しいカード {{ String.fromCharCode(65 + ix) }} x {{ t }}
+            </span>
+          </span>
+          <span v-for="(s, ix) in hand.searches">
+            <span v-if="s">
+              サーチ {{ ix }} x {{ s }}
+            </span>
+          </span>
+          <span v-if="hand.others">その他 x {{ hand.others }}</span>
+          確率: {{ hand.prob }}
+        </li>
+      </ul>
 
       <hr />
 
