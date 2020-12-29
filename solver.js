@@ -27,7 +27,12 @@ var searches;
  * })
  *
  * [戻り値]
- * - すべての欲しいカードに最低１枚は触れる確率
+ * successRate ... Number 欲しいカードが各１枚以上揃う確率 (%)
+ * hands       ... Hand[] 各手札になる確率
+ * - targets  ... Int[]  それぞれの「欲しいカード」の枚数
+ * - searches ... Int[]  それぞれのサーチの枚数
+ * - other    ... Int     「欲しいカード」でもサーチでもないカードの枚数
+ * - prob     ... Numbre その手札が発生する確率 (%)
  */
 
 function solve (params) {
@@ -76,7 +81,7 @@ function solveR (state) {
                 other: state.other,
                 prob: caseProb * 100
             }],
-            successRate: caseProb * successRate  /* この手札になる確率 x サーチの成功率 */
+            successRate: caseProb * successRate  /* この手札になる確率 (%) x サーチの成功率 */
         };
     } else if (state.targetsIx < targets.length) {
         /* 「欲しいカード」を各何枚素引きするかの場合分け */
