@@ -59,8 +59,8 @@ const vm = new Vue({
             if (vm.preset == 'tane8') {
                 vm.param.deckNum = 60;
                 vm.param.handNum = 7;
-                vm.param.targets = [8];
-                vm.param.targetLabels = ["種ポケ"];
+                vm.param.targets = [8, 1];
+                vm.param.targetLabels = ["種ポケ", "デデンネ"];
                 vm.param.searches = [];
                 vm.param.searchLabels = [];
             } else if (vm.preset == 'support8') {
