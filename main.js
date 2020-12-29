@@ -2,11 +2,14 @@ const vm = new Vue({
     el: "#app",
     data: {
         preset: "",
-        handNum: 8,
-        deckNum: 60,
-        targets: [4],
-        searches: [],
-        showDetails: false,
+        param: {
+            handNum: 8,
+            deckNum: 60,
+            targets: [4],
+            targetLabels: [""],
+            searches: [],
+            searchLabels: []
+        },
         result: {
             hands: [],
             successRate: "-"
@@ -14,33 +17,30 @@ const vm = new Vue({
     },
     methods: {
         delTarget: function (ix) {
-            vm.targets.splice(ix, 1);
+            vm.param.targets.splice(ix, 1);
         },
         addTarget: function () {
-            vm.targets.push(4);
+            vm.param.targets.push(4);
         },
         delSearch: function (ix) {
-            vm.searches.splice(ix, 1);
+            vm.param.searches.splice(ix, 1);
         },
         add100Search: function () {
-            vm.searches.push({ type: 'prob', prob: 100, target: 0, num: 4 });
+            vm.param.searches.push({ type: 'prob', prob: 100, target: 0, num: 4 });
         },
         addProbSearch: function () {
-            vm.searches.push({ type: 'prob', prob: 50, target: 0, num: 4 });
+            vm.param.searches.push({ type: 'prob', prob: 50, target: 0, num: 4 });
         },
         addCountSearch: function () {
-            vm.searches.push({ type: 'count', count: 7, target: 0, num: 4 });
-        },
-        toggleShowDetails: function () {
-            vm.showDetails = !vm.showDetails;
+            vm.param.searches.push({ type: 'count', count: 7, target: 0, num: 4 });
         },
         compute: function () {
             try {
                 vm.result = solve({
-                    deckNum: vm.deckNum,
-                    handNum: vm.handNum,
-                    targets: vm.targets,
-                    searches: vm.searches,
+                    deckNum: vm.param.deckNum,
+                    handNum: vm.param.handNum,
+                    targets: vm.param.targets,
+                    searches: vm.param.searches,
                 });
             } catch {
                 vm.result = { hands: [], successRate: "N/A" };
@@ -48,29 +48,40 @@ const vm = new Vue({
         },
         changePreset: function () {
             if (vm.preset == 'tane8') {
-                vm.deckNum = 60;
-                vm.handNum = 7;
-                vm.targets = [8];
-                vm.searches = [];
-                vm.compute();
+                vm.param.deckNum = 60;
+                vm.param.handNum = 7;
+                vm.param.targets = [8];
+                vm.param.targetLabels = ["種ポケ"];
+                vm.param.searches = [];
+                vm.param.searchLabels = [];
             } else if (vm.preset == 'support8') {
-                vm.deckNum = 60;
-                vm.handNum = 8;
-                vm.targets = [8];
-                vm.searches = [{ type: 'count', count: 7, target: 0, num: 2 }];
-                vm.compute();
+                vm.param.deckNum = 60;
+                vm.param.handNum = 8;
+                vm.param.targets = [8];
+                vm.param.targetLabels = ["サポート"];
+                vm.param.searches = [{ type: 'count', count: 7, target: 0, num: 2 }];
+                vm.param.searchLabels = ["ポケギア"];
             } else if (vm.preset == 'exo') {
-                vm.deckNum = 40;
-                vm.handNum = 5;
-                vm.targets = [1, 1, 1, 1, 1];
-                vm.searches = [];
-                vm.compute();
+                vm.param.deckNum = 40;
+                vm.param.handNum = 5;
+                vm.param.targets = [1, 1, 1, 1, 1];
+                vm.param.targetLabels = ["左腕", "右腕", "左脚", "右脚", "本体"];
+                vm.param.searches = [];
+                vm.param.searchLabels = [];
             } else if (vm.preset == 'land') {
-                vm.deckNum = 60;
-                vm.handNum = 7;
-                vm.targets = [20];
-                vm.searches = [];
-                vm.compute();
+                vm.param.deckNum = 60;
+                vm.param.handNum = 7;
+                vm.param.targets = [20];
+                vm.param.targetLabels = ["土地"];
+                vm.param.searches = [];
+                vm.param.searchLabels = [];
+            } else {
+                vm.param.deckNum = 60;
+                vm.param.handNum = 8;
+                vm.param.targets = [4];
+                vm.param.targetLabels = [""];
+                vm.param.searches = [];
+                vm.param.searchLabels = [];
             }
         }
     }

@@ -40,20 +40,22 @@
 
       <div>
         初手：
-        <input type="number" v-model="handNum" /> 枚
+        <input type="number" v-model="param.handNum" /> 枚
       </div>
 
       <div>
         デッキ：
-        <input type="number" v-model="deckNum" /> 枚
+        <input type="number" v-model="param.deckNum" /> 枚
       </div>
 
       <h2>欲しいカード</h2>
 
       <ul>
-        <li v-for="(e, ix) in targets">
-          {{ String.fromCharCode(65 + ix) }}
-          x <input type="number" v-model="targets[ix]" /> 枚
+        <li v-for="(e, ix) in param.targets">
+          <input type="text"
+                 v-model="param.targetLabels[ix]"
+                 :placeholder="'カード' + String.fromCharCode(65 + ix)" />
+          x <input type="number" v-model="param.targets[ix]" /> 枚
           <button v-if="ix >= 1" @click="delTarget(ix)">x</button>
         </li>
       </ul>
@@ -63,25 +65,29 @@
       <h2>サーチカード</h2>
 
       <ul>
-        <li v-for="(e, ix) in searches">
+        <li v-for="(e, ix) in param.searches">
+          <input type="text"
+                 v-model="param.searchLabels[ix]"
+                 :placeholder="'サーチ' + String.fromCharCode(65 + ix)" />
+          ...
           <span v-if="e.type == 'prob' && e.prob == 100">
             確定サーチ
           </span>
           <span v-if="e.type == 'prob' && e.prob != 100">
             不確定サーチ
-            (<input type="number" v-model="searches[ix].prob" /> ％成功)
+            (<input type="number" v-model="param.searches[ix].prob" /> ％成功)
           </span>
           <span v-if="e.type == 'count'">
             不確定サーチ
-            (<input type="number" v-model="searches[ix].count" /> 枚めくる)
+            (<input type="number" v-model="param.searches[ix].count" /> 枚めくる)
           </span>
           対象
-          <select v-model="searches[ix].target">
-            <option v-for="(e, ix) in targets" :value="ix">
-              {{ String.fromCharCode(65 + ix) }}
+          <select v-model="param.searches[ix].target">
+            <option v-for="(e, ix) in param.targets" :value="ix">
+              {{ param.targetLabels[ix] || 'カード' + String.fromCharCode(65 + ix) }}
             </option>
           </select>
-          x <input type="number" v-model="searches[ix].num" /> 枚
+          x <input type="number" v-model="param.searches[ix].num" /> 枚
           <button @click="delSearch(ix)">x</button>
         </li>
       </ul>
@@ -96,26 +102,24 @@
 
       <p>欲しいカードが各１枚以上揃う確率：{{ result.successRate * 100 }} %</p>
 
-      <h2>詳細</h2>
+      <h3>それぞれのハンドの確率</h3>
 
-      <button @click="toggleShowDetails()">
-        {{ showDetails ? "詳細を閉じる" : "ハンドごとの確率を表示" }}
-      </button>
-
-      <ul v-if="showDetails">
+      <ul>
         <li v-for="hand in result.hands">
           <span v-for="(t, ix) in hand.targets">
             <span v-if="t">
-              欲しいカード {{ String.fromCharCode(65 + ix) }} x {{ t }}
+              {{ param.targetLabels[ix] || 'カード' + String.fromCharCode(65 + ix) }} x {{ t }}
             </span>
           </span>
           <span v-for="(s, ix) in hand.searches">
             <span v-if="s">
-              サーチ {{ ix }} x {{ s }}
+              {{ param.searchLabels[ix] || 'サーチ' + String.fromCharCode(65 + ix) }} x {{ s }}
             </span>
           </span>
-          <span v-if="hand.other">その他 x {{ hand.other }}</span>
-          確率: {{ hand.prob }}
+          <span v-if="hand.other == param.handNum">
+            なし
+          </span>
+          {{ hand.prob * 100 }} %
         </li>
       </ul>
 
