@@ -60,7 +60,7 @@ const vm = new Vue({
                 vm.param.deckNum = 60;
                 vm.param.handNum = 7;
                 vm.param.targets = [8, 1];
-                vm.param.targetLabels = ["種ポケ", "デデンネ"];
+                vm.param.targetLabels = ["種", "デデンネ"];
                 vm.param.searches = [];
                 vm.param.searchLabels = [];
             } else if (vm.preset == 'support8') {
@@ -84,6 +84,16 @@ const vm = new Vue({
                 vm.param.targetLabels = ["土地"];
                 vm.param.searches = [];
                 vm.param.searchLabels = [];
+            } else if (vm.preset == 'evo') {
+                vm.param.deckNum = 60;
+                vm.param.handNum = 8;
+                vm.param.targets = [3];
+                vm.param.targetLabels = ["進化前"];
+                vm.param.searches = [
+                    { type: 'prob', prob: 100, target: 0, num: 4 },
+                    { type: 'prob', prob: 100, target: 0, num: 4 },
+                ];
+                vm.param.searchLabels = ["クイック", "通信"];
             } else {
                 vm.param.deckNum = 60;
                 vm.param.handNum = 8;
