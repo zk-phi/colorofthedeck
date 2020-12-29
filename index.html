@@ -119,6 +119,9 @@
               {{ param.searchLabels[ix] || 'サーチ' + String.fromCharCode(65 + ix) }} x {{ s }}
             </span>
           </span>
+          <span v-if="hand.other == param.handNum - 1">
+            のみ
+          </span>
           <span v-if="hand.other == param.handNum">
             なし
           </span>
