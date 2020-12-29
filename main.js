@@ -15,6 +15,15 @@ const vm = new Vue({
             successRate: "-"
         }
     },
+    watch: {
+        param: {
+            handler: function () {
+                vm.result.hands = [];
+                vm.result.successRate = "-";
+            },
+            deep: true
+        }
+    },
     methods: {
         delTarget: function (ix) {
             vm.param.targets.splice(ix, 1);
