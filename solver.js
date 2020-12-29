@@ -74,7 +74,7 @@ function solveR (state) {
                 targets: state.targets,
                 searches: state.searches,
                 other: state.other,
-                prob: caseProb
+                prob: caseProb * 100
             }],
             successRate: caseProb * successRate  /* この手札になる確率 x サーチの成功率 */
         };
