@@ -81,7 +81,7 @@ function solveR (state) {
                 other: state.other,
                 prob: caseProb * 100
             }],
-            successRate: caseProb * successRate  /* この手札になる確率 (%) x サーチの成功率 */
+            successRate: caseProb * successRate * 100  /* この手札になる確率 x サーチの成功率 */
         };
     } else if (state.targetsIx < targets.length) {
         /* 「欲しいカード」を各何枚素引きするかの場合分け */
