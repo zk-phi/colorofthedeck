@@ -102,7 +102,9 @@
       <button @click="compute()">計算</button>
 
       <p>
-        欲しいカードに<span v-if="param.targets.length > 1">各</span>１枚以上触れる確率：
+        <span v-for="(t, ix) in param.targetLabels">
+          {{ (ix > 0 ? ', ' : '') + (t || 'カード' + String.fromCharCode(65 + ix)) }}
+        </span>に<span v-if="param.targets.length > 1">各</span>１枚以上触れる確率：
         {{ result.successRate | formatProb }} %
       </p>
 

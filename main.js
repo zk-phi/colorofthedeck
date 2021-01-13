@@ -33,21 +33,27 @@ const vm = new Vue({
     methods: {
         delTarget: function (ix) {
             vm.param.targets.splice(ix, 1);
+            vm.param.targetLabels.splice(ix, 1);
         },
         addTarget: function () {
             vm.param.targets.push(4);
+            vm.param.targetLabels.push("");
         },
         delSearch: function (ix) {
             vm.param.searches.splice(ix, 1);
+            vm.param.searchLabels.splice(ix, 1);
         },
         add100Search: function () {
             vm.param.searches.push({ type: 'prob', prob: 100, target: 0, num: 4 });
+            vm.param.searchLabels.push("");
         },
         addProbSearch: function () {
             vm.param.searches.push({ type: 'prob', prob: 50, target: 0, num: 4 });
+            vm.param.searchLabels.push("");
         },
         addCountSearch: function () {
             vm.param.searches.push({ type: 'count', count: 7, target: 0, num: 4 });
+            vm.param.searchLabels.push("");
         },
         compute: function () {
             try {
