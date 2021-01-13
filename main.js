@@ -26,6 +26,9 @@ const vm = new Vue({
     },
     filters: {
         formatProb: function (prob) {
+            const match = (prob + "").match(/^[^1-9]*\.00+[^0]/);
+            if (match) return match[0];
+
             const parts = (prob + "").split(".");
             return parts[0] + "." + (parts[1] || "").substring(0, 2);
         }
