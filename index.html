@@ -103,7 +103,7 @@
 
       <p>
         欲しいカードに<span v-if="param.targets.length > 1">各</span>１枚以上触れる確率：
-        {{ result.successRate }} %
+        {{ result.successRate | formatProb }} %
       </p>
 
       <h3>それぞれのハンドの確率</h3>
@@ -126,7 +126,7 @@
           <span v-if="hand.other == param.handNum">
             なし
           </span>
-          {{ hand.prob }} %
+          {{ hand.prob | formatProb }} %
         </li>
       </ul>
 

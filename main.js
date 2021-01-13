@@ -24,6 +24,12 @@ const vm = new Vue({
             deep: true
         }
     },
+    filters: {
+        formatProb: function (prob) {
+            const parts = (prob + "").split(".");
+            return parts[0] + "." + (parts[1] || "").substring(0, 2);
+        }
+    },
     methods: {
         delTarget: function (ix) {
             vm.param.targets.splice(ix, 1);
