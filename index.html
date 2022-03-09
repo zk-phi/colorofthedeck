@@ -2,7 +2,7 @@
 <html>
 
   <head>
-    <title>ドロー確率計算機 (不確定サーチ対応)</title>
+    <title>ドロー確率計算機</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,18 +13,11 @@
   <body>
     <div id="app">
 
-      <h1>ドロー確率計算機 (不確定サーチ対応)</h1>
+      <h1>ドロー確率計算機</h1>
 
       <h2>なにこれ</h2>
 
       <p>欲しいカードや各種サーチの枚数から、初手が良い感じになる確率を割り出します。</p>
-      <p>不確定サーチの成功率も考慮します：</p>
-
-      <ul>
-        <li>確定サーチ「(目当てのカード) を手札に加える」</li>
-        <li>不確定サーチ (確率固定) 「コインが表なら (目当てのカード) を手札に加える」など</li>
-        <li>不確定サーチ (枚数固定) 「n 枚めくって 1 枚手札に加え、残りはデッキに戻す」など</li>
-      </ul>
 
       例：
 
@@ -63,40 +56,6 @@
 
       <button @click="addTarget()">＋</button>
 
-      <h2>サーチカード</h2>
-
-      <ul>
-        <li v-for="(e, ix) in param.searches">
-          <input type="text"
-              v-model="param.searchLabels[ix]"
-              :placeholder="'サーチ' + String.fromCharCode(65 + ix)" />
-          ...
-          <span v-if="e.type == 'prob' && e.prob == 100">
-            確定サーチ
-          </span>
-          <span v-if="e.type == 'prob' && e.prob != 100">
-            不確定サーチ
-            (<input type="number" v-model="param.searches[ix].prob" /> ％成功)
-          </span>
-          <span v-if="e.type == 'count'">
-            不確定サーチ
-            (<input type="number" v-model="param.searches[ix].count" /> 枚めくる)
-          </span>
-          対象
-          <select v-model="param.searches[ix].target">
-            <option v-for="(e, ix) in param.targets" :value="ix">
-              {{ param.targetLabels[ix] || 'カード' + String.fromCharCode(65 + ix) }}
-            </option>
-          </select>
-          x <input type="number" v-model="param.searches[ix].num" /> 枚
-          <button @click="delSearch(ix)">x</button>
-        </li>
-      </ul>
-
-      <button @click="add100Search()">＋確定サーチ</button>
-      <button @click="addProbSearch()">＋不確定サーチ (確率固定)</button>
-      <button @click="addCountSearch()">＋不確定サーチ (枚数固定)</button>
-
       <h2>結果</h2>
 
       <button @click="compute()">計算</button>
@@ -117,11 +76,6 @@
               {{ param.targetLabels[ix] || 'カード' + String.fromCharCode(65 + ix) }} x {{ t }}
             </span>
           </span>
-          <span v-for="(s, ix) in hand.searches">
-            <span v-if="s">
-              {{ param.searchLabels[ix] || 'サーチ' + String.fromCharCode(65 + ix) }} x {{ s }}
-            </span>
-          </span>
           <span v-if="hand.other == param.handNum - 1">
             のみ
           </span>
@@ -133,13 +87,6 @@
       </ul>
 
       <hr />
-
-      <small>
-        <p>豆知識：</p>
-
-        <p>1. サーチを使う順で確率がちょっと変わります。たとえば手札に「確定サーチ」と「不確定サーチ (枚数固定)」が両方ある場合、先に「確定サーチ」を使ってデッキを圧縮しておいた方が、後の「不確定サーチ」の成功率が少しだけ上がります (せいぜい 1% くらいですが)。このツールで表示される確率は何も考えずに (一番下手くそな) プレイをした場合の確率です。</p>
-        <p>2. 「サーチカード A で別のサーチカード B を持ってくる」ようなパターンは、 B の枚数も A の枚数としてカウントしてしまうことで近似できます。</p>
-      </small>
 
     </div>
     <script src="solver.js"></script>

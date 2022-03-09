@@ -1,36 +1,25 @@
 var deckNum;
 var handNum;
 var targets;
-var searches;
 
 /*
  * [引数]
- * deckNum  ... Int      デッキ枚数
- * handNum  ... Int      ハンド枚数
- * targets  ... Int[]    欲しいカードの枚数の配列
- * searches ... Search[] サーチカードの配列、それぞれの要素は以下のどちらか：
- * - 確率固定サーチ { type: 'prob', prob: 成功率%, num: 枚数, target: サーチ対象 }
- * - 枚数固定サーチ { type: 'count', count: 見れる枚数, num: 枚数, target: サーチ対象 }
- * - (確定サーチは確率 1.0 の確率固定サーチ)
+ * deckNum  ... Int   デッキ枚数
+ * handNum  ... Int   ハンド枚数
+ * targets  ... Int[] 欲しいカードの枚数の配列
  *
  * [例]
  * // デッキ枚数６０枚から８枚を引いて、各４枚投入された欲しいカード A, B を揃えたい
- * // 50% の確率で成功する A のサーチと、 25% の B のサーチが各４枚入っている
  * solve({
  *   deckNum: 60,
  *   handNum: 8,
  *   targets: [4, 4],
- *   searches: [
- *     { type: 'prob', prob: 50, num: 4, target: 0 },
- *     { type: 'prob', prob: 25, num: 4, target: 1 }
- *   ]
  * })
  *
  * [戻り値]
  * successRate ... Number 欲しいカードが各１枚以上揃う確率 (%)
  * hands       ... Hand[] 各手札になる確率
  * - targets  ... Int[]  それぞれの「欲しいカード」の枚数
- * - searches ... Int[]  それぞれのサーチの枚数
  * - other    ... Int     「欲しいカード」でもサーチでもないカードの枚数
  * - prob     ... Numbre その手札が発生する確率 (%)
  */
@@ -39,21 +28,9 @@ function solve (params) {
   deckNum = params.deckNum;
   handNum = params.handNum;
   targets = params.targets;
-  /* 失敗率に変換しておく */
-  searches = params.searches.map(function (s) {
-    if (s.type == 'prob') {
-      return { failRate: 1.0 - (s.prob / 100.0), num: s.num, target: s.target };
-    } else {
-      /* 枚数固定サーチの失敗率も計算しておく */
-      var a = ncr(params.deckNum - params.handNum - params.targets[s.target], s.count);
-      var b = ncr(params.deckNum - params.handNum, s.count);
-      return { failRate: a / b, num: s.num, target: s.target };
-    }
-  });
   return solveR({
     /* 今の手札 */
     targets: params.targets.map(function () { return 0 }),
-    searches: params.searches.map(function () { return 0 }),
     other: 0,
     /* ここまでの場合の数 */
     cases: 1,
@@ -65,7 +42,6 @@ function solve (params) {
     deckNum: params.deckNum,
     /* どこまで見たか */
     targetsIx: 0,
-    searchesIx: 0
   });
 }
 
@@ -77,7 +53,6 @@ function solveR (state) {
     return {
       hands: [{
         targets: state.targets,
-        searches: state.searches,
         other: state.other,
         prob: caseProb * 100
       }],
@@ -94,7 +69,6 @@ function solveR (state) {
         targets: state.targets.map(function (v, ix) {
           return v + (ix == state.targetsIx ? i : 0)
         }),
-        searches: state.searches,
         other: state.other,
         cases: state.cases * ncr(targetNum, i),
         failRate: state.failRate.map(function (v, ix) {
@@ -103,33 +77,6 @@ function solveR (state) {
         handNum: state.handNum - i,
         deckNum: state.deckNum - targetNum,
         targetsIx: state.targetsIx + 1,
-        searchesIx: state.searchesIx
-      });
-      hands = hands.concat(res.hands);
-      successRate += res.successRate;
-    }
-    return { hands: hands, successRate: successRate };
-  } else if (state.searchesIx < searches.length) {
-    /* サーチを各何枚引くかの場合分け */
-    var hands = [];
-    var successRate = 0;
-    var search = searches[state.searchesIx];
-    for (var i = 0; i <= Math.min(search.num, state.handNum); i++) {
-      /* searchesIx 番目のサーチを i 枚素引きする場合 */
-      var res = solveR({
-        targets: state.targets,
-        searches: state.searches.map(function (v, ix) {
-          return v + (ix == state.searchesIx ? i : 0)
-        }),
-        other: state.other,
-        cases: state.cases * ncr(search.num, i),
-        failRate: state.failRate.map(function (v, ix) {
-          return v * (ix == search.target ? Math.pow(search.failRate, i) : 1)
-        }),
-        handNum: state.handNum - i,
-        deckNum: state.deckNum - search.num,
-        targetsIx: state.targetsIx,
-        searchesIx: state.searchesIx + 1
       });
       hands = hands.concat(res.hands);
       successRate += res.successRate;
@@ -139,14 +86,12 @@ function solveR (state) {
     /* 「欲しいカード」とサーチを引く枚数が確定 → 残りは適当なカード */
     return solveR({
       targets: state.targets,
-      searches: state.searches,
       other: state.other + state.handNum,
       cases: state.cases * ncr(state.deckNum, state.handNum),
       failRate: state.failRate,
       handNum: 0,
       deckNum: state.deckNum - state.handNum,
       targetsIx: state.targetsIx,
-      searchesIx: state.searchesIx
     });
   }
 }
