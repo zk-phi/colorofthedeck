@@ -17,10 +17,9 @@ var targets;
  * })
  *
  * [戻り値]
- * successRate ... Number 欲しいカードが各１枚以上揃う確率 (%)
  * hands       ... Hand[] 各手札になる確率
  * - targets  ... Int[]  それぞれの「欲しいカード」の枚数
- * - other    ... Int     「欲しいカード」でもサーチでもないカードの枚数
+ * - other    ... Int     「欲しいカード」以外の枚数
  * - prob     ... Numbre その手札が発生する確率 (%)
  */
 
@@ -49,19 +48,16 @@ function solveR (state) {
   if (state.handNum == 0) {
     /* 手札を引き終わった → 確率計算して返す */
     var caseProb = state.cases / ncr(deckNum, handNum);
-    var successRate = state.failRate.reduce(function (l, r) { return l * (1.0 - r); }, 1);
     return {
       hands: [{
         targets: state.targets,
         other: state.other,
         prob: caseProb * 100
       }],
-      successRate: caseProb * successRate * 100  /* この手札になる確率 x サーチの成功率 */
     };
   } else if (state.targetsIx < targets.length) {
     /* 「欲しいカード」を各何枚素引きするかの場合分け */
     var hands = [];
-    var successRate = 0;
     var targetNum = targets[state.targetsIx];
     for (var i = 0; i <= Math.min(targetNum, state.handNum); i++) {
       /* targetsIx 番目の「欲しいカード」を i 枚素引きする場合 */
@@ -79,9 +75,8 @@ function solveR (state) {
         targetsIx: state.targetsIx + 1,
       });
       hands = hands.concat(res.hands);
-      successRate += res.successRate;
     }
-    return { hands: hands, successRate: successRate };
+    return { hands: hands };
   } else {
     /* 「欲しいカード」とサーチを引く枚数が確定 → 残りは適当なカード */
     return solveR({

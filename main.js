@@ -10,14 +10,12 @@ const vm = new Vue({
     },
     result: {
       hands: [],
-      successRate: "-"
     }
   },
   watch: {
     param: {
       handler: function () {
         vm.result.hands = [];
-        vm.result.successRate = "-";
       },
       deep: true
     }
@@ -48,7 +46,7 @@ const vm = new Vue({
           targets: vm.param.targets,
         });
       } catch {
-        vm.result = { hands: [], successRate: "N/A" };
+        vm.result = { hands: [] };
       }
     },
     changePreset: function () {

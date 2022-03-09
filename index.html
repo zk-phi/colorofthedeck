@@ -60,15 +60,6 @@
 
       <button @click="compute()">計算</button>
 
-      <p>
-        <span v-for="(t, ix) in param.targetLabels">
-          {{ (ix > 0 ? ', ' : '') + (t || 'カード' + String.fromCharCode(65 + ix)) }}
-        </span>に<span v-if="param.targets.length > 1">各</span>１枚以上触れる確率：
-        {{ result.successRate | formatProb }} %
-      </p>
-
-      <h3>それぞれのハンドの確率</h3>
-
       <ul>
         <li v-for="hand in result.hands">
           <span v-for="(t, ix) in hand.targets">
