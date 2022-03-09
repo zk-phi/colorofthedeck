@@ -54,8 +54,8 @@
       <ul>
         <li v-for="(e, ix) in param.targets">
           <input type="text"
-                 v-model="param.targetLabels[ix]"
-                 :placeholder="'カード' + String.fromCharCode(65 + ix)" />
+              v-model="param.targetLabels[ix]"
+              :placeholder="'カード' + String.fromCharCode(65 + ix)" />
           x <input type="number" v-model="param.targets[ix]" /> 枚
           <button v-if="ix >= 1" @click="delTarget(ix)">x</button>
         </li>
@@ -68,8 +68,8 @@
       <ul>
         <li v-for="(e, ix) in param.searches">
           <input type="text"
-                 v-model="param.searchLabels[ix]"
-                 :placeholder="'サーチ' + String.fromCharCode(65 + ix)" />
+              v-model="param.searchLabels[ix]"
+              :placeholder="'サーチ' + String.fromCharCode(65 + ix)" />
           ...
           <span v-if="e.type == 'prob' && e.prob == 100">
             確定サーチ
