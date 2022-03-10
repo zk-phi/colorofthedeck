@@ -30,19 +30,12 @@
         <option value="evo">先１で進化前ポケモンをベンチに用意できる確率</option>
       </select>
 
-      <h2>基本設定</h2>
+      <h2>デッキ</h2>
 
       <div>
-        初手：
-        <input type="number" v-model="param.handNum" /> 枚
-      </div>
-
-      <div>
-        デッキ：
+        総数：
         <input type="number" v-model="param.deckNum" /> 枚
       </div>
-
-      <h2>欲しいカード</h2>
 
       <ul>
         <li v-for="(e, ix) in param.targets">
@@ -58,7 +51,14 @@
 
       <h2>結果</h2>
 
-      <button @click="compute()">計算</button>
+      <div>
+        初手：
+        <input type="number" v-model="param.handNum" /> 枚
+      </div>
+
+      <div>
+        <button @click="compute()">計算</button>
+      </div>
 
       <ul>
         <li v-for="hand in result.hands">
